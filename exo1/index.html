@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA</title>
+    <meta name="theme-color" content="#ffff">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+        <a  class="navbar-brand" href="index.html">Accueil</a>
+        <a  class="navbar-brand" href="game.html">game</a>
+        </div>
+        
+    </nav>
+    <h1 class="text-center m-5">Page d'Accueil</h1>
+    <div class="input-group mb-5">
+        <input type="search" id="searchInput" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+        <button type="button" id="searchButton" class="btn btn-outline-primary" data-mdb-ripple-init>Search</button>
+    </div>
+    <div id="searchResults" class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4"></div>
+
+    
+    <script>
+        // Function to handle search
+        function handleSearch() {
+            var searchTerm = document.getElementById('searchInput').value;
+            var apiUrl = 'https://api.tvmaze.com/search/shows?q=' + searchTerm;
+
+            // Effectuer une requête AJAX vers l'API
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', apiUrl, true);
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    displayResults(data);
+                } else {
+                    console.error('Request failed. Status code: ' + xhr.status);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Request failed');
+            };
+            xhr.send();
+        }
+
+        // Function to truncate summary
+        function truncateSummary(summary) {
+            // Limiter le résumé à un maximum de 50 caractères
+            if (summary.length > 50) {
+                return summary.substring(0, 50) + '...';
+            } else {
+                return summary;
+            }
+        }
+
+        // Function to display search results
+        function displayResults(data) {
+            var searchResultsContainer = document.getElementById('searchResults');
+            searchResultsContainer.innerHTML = ''; // Clear previous results
+
+            // Loop through each result and create HTML elements to display them
+            data.forEach(function(result) {
+                const apiUrl = `https://api.tvmaze.com/shows/${result.show.id}`;
+                var showName = result.show.name;
+                var showSummary = result.show.summary ? truncateSummary(result.show.summary) : 'No summary available';
+                var showImage = result.show.image ? result.show.image.medium : 'images/image.png';
+                
+                var showElement = document.createElement('div');
+                showElement.classList.add('col');
+                showElement.innerHTML = `
+                    <div class="card">
+                        <a href="show-details.html?id=${result.show.id}">
+                            <img src="${showImage}" class="card-img-top" alt="${showName}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">${showName}</h5>
+                            <p class="card-text">${showSummary}</p>
+                        </div>
+                    </div>
+                `;
+                searchResultsContainer.appendChild(showElement);
+            });
+        }
+
+        // Handle search when Enter key is pressed
+        document.getElementById('searchInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Handle search when button is clicked
+        document.getElementById('searchButton').addEventListener('click', handleSearch);
+        
+        // Register service worker
+        if('serviceWorker' in navigator){
+            navigator.serviceWorker.register('/PWA/exo1/service-worker.js')
+        }
+    </script>
+</body>
+</html>

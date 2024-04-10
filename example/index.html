@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffff">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <nav>
+        <img src="images/icons/icon48.png">
+        <a href="index.html">Accueil</a>
+        <a href="page2.html">Page2</a>
+    </nav>
+    <p>Page d'Accueil</p>
+
+    <script>
+        if('serviceWorker' in navigator){
+            navigator.serviceWorker.register('/PWA/example/service-worker.js')
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+    "name" : "Première PWA",
+    "short_name" : "pwa1",
+    "start_url" : "/PWA/example/",
+    "display" : "standalone",
+    "background_color" : "#ffff",
+    "theme_color" : "#ffff",
+    "description" : "Première essai",
+    "icons": [
+        {
+            "src": "images/icons/icon48.png",
+            "sizes": "258x258",
+            "type": "image/png"
+        },
+        {
+            "src": "images/icons/icon48.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+
+        }   
+            ]
+}
