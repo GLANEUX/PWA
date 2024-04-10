@@ -94,35 +94,35 @@ self.addEventListener("fetch", (e) => {
         return new Response('Failed to fetch', { status: 404, statusText: 'Not Found' });
       })()
     );
-  } else if (e.request.destination === 'image') {
-    // Gérer les requêtes d'images
-    e.respondWith(
-      (async () => {
-        const cache = await caches.open(VERSION);
+  // } else if (e.request.destination === 'image') {
+  //   // Gérer les requêtes d'images
+  //   e.respondWith(
+  //     (async () => {
+  //       const cache = await caches.open(VERSION);
 
-        const preloadedResponse = await e.preloadResponse;
+  //       const preloadedResponse = await e.preloadResponse;
 
-          if (preloadedResponse) return preloadedResponse;
+  //         if (preloadedResponse) return preloadedResponse;
 
-        const cachedResponse = await cache.match(e.request);
+  //       const cachedResponse = await cache.match(e.request);
 
-        if (cachedResponse) return cachedResponse;
+  //       if (cachedResponse) return cachedResponse;
        
-        try {
-          const fetchResponse = await fetch(e.request);
-          if (fetchResponse.ok) {
-            console.log("HERE-----------------------------ssss----F")
+  //       try {
+  //         const fetchResponse = await fetch(e.request);
+  //         if (fetchResponse.ok) {
+  //           console.log("HERE-----------------------------ssss----F")
 
-            await cache.add(e.request);
-            return fetchResponse;
-          }
-        } catch (error) {
-          console.error('Fetch failed:', error);
-        }
+  //           await cache.add(e.request);
+  //           return fetchResponse;
+  //         }
+  //       } catch (error) {
+  //         console.error('Fetch failed:', error);
+  //       }
 
-        return new Response('Failed to fetch', { status: 404, statusText: 'Not Found' });
-      })()
-    );
+  //       return new Response('Failed to fetch', { status: 404, statusText: 'Not Found' });
+  //     })()
+  //   );
   } else if (FILECACHE.includes(e.request.url)) {
     e.respondWith(caches.match(e.request));
   }

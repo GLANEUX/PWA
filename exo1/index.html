@@ -59,33 +59,45 @@
         }
 
         // Function to display search results
-        function displayResults(data) {
-            var searchResultsContainer = document.getElementById('searchResults');
-            searchResultsContainer.innerHTML = ''; // Clear previous results
+function displayResults(data) {
+    var searchResultsContainer = document.getElementById('searchResults');
+    searchResultsContainer.innerHTML = ''; // Clear previous results
 
-            // Loop through each result and create HTML elements to display them
-            data.forEach(function(result) {
-                const apiUrl = `https://api.tvmaze.com/shows/${result.show.id}`;
-                var showName = result.show.name;
-                var showSummary = result.show.summary ? truncateSummary(result.show.summary) : 'No summary available';
-                var showImage = result.show.image ? result.show.image.medium : 'images/image.png';
-                
-                var showElement = document.createElement('div');
-                showElement.classList.add('col');
-                showElement.innerHTML = `
-                    <div class="card">
-                        <a href="show-details.html?id=${result.show.id}">
-                            <img src="${showImage}" class="card-img-top" alt="${showName}">
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">${showName}</h5>
-                            <p class="card-text">${showSummary}</p>
-                        </div>
-                    </div>
-                `;
-                searchResultsContainer.appendChild(showElement);
-            });
+    // Loop through each result and create HTML elements to display them
+    data.forEach(async function(result) {
+        const apiUrl = `https://api.tvmaze.com/shows/${result.show.id}`;
+        var showName = result.show.name;
+        var showSummary = result.show.summary ? truncateSummary(result.show.summary) : 'No summary available';
+        var showImage = result.show.image ? result.show.image.medium : 'images/image.png';
+
+        // Perform an additional request to fetch show details and cache the response
+        try {
+            const response = await fetch(apiUrl);
+            if (response.ok) {
+                const showDetails = await response.json();
+                await cache.put(apiUrl, new Response(JSON.stringify(showDetails)));
+            }
+        } catch (error) {
+            console.error('Error fetching show details:', error);
         }
+        
+        var showElement = document.createElement('div');
+        showElement.classList.add('col');
+        showElement.innerHTML = `
+            <div class="card">
+                <a href="show-details.html?id=${result.show.id}">
+                    <img src="${showImage}" class="card-img-top" alt="${showName}">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">${showName}</h5>
+                    <p class="card-text">${showSummary}</p>
+                </div>
+            </div>
+        `;
+        searchResultsContainer.appendChild(showElement);
+    });
+}
+
 
         // Handle search when Enter key is pressed
         document.getElementById('searchInput').addEventListener('keydown', function(event) {
